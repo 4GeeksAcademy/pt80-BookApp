@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import Container, {Row, Col} from "../components/Grid";
+import Container, { Row, Col } from "../components/Grid";
 import BookCard from "../components/BookCard.jsx";
 
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
@@ -15,8 +15,8 @@ export const Home = () => {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
-  }
-  
+  };
+
   const enableButton = () => [title, author, cover].some((x) => x);
 
   return (
@@ -89,7 +89,7 @@ export const Home = () => {
       <Row>
         <Col width={{ sm: 8 }} offset={{ sm: 2 }}>
           {store.books.map((book) => (
-            <div className="mb-3">
+            <div className="mb-3" key={book.id}>
               <Link to={`/library/${book.id}`}>
                 <h1>{book.title}</h1>
               </Link>
@@ -97,7 +97,6 @@ export const Home = () => {
                 book={book}
                 showButtons
                 onDelete={() => deleteBook(book.id)}
-                key={book.id}
               />
             </div>
           ))}

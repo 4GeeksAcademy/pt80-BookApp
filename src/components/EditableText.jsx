@@ -1,22 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const EditableText = ({ text, onSubmit }) => {
+const EditableText = ({ value, onSubmit = () => null }) => {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(text);
+  const [text, setText] = useState();
+
+  useEffect(() => {
+    setText(value);
+  }, [value]);
 
   return editing ? (
     <form
       onSubmit={(ev) => {
         ev.preventDefault();
-        onSubmit(value);
+        onSubmit(text);
         setEditing(false);
       }}
     >
-      <input value={value} onChange={(ev) => setValue(ev.target.value)} />
+      <input
+        value={text}
+        onChange={(ev) => setText(ev.target.value)}
+        autoFocus
+      />
     </form>
   ) : (
     <span onClick={() => setEditing(true)}>{text}</span>
   );
 };
 
-export default EditableText;
+const EditableNumber = ({ value, onSubmit = () => null }) => {
+  const [editing, setEditing] = useState(false);
+  const [number, setNumber] = useState();
+
+  useEffect(() => {
+    setNumber(value);
+  }, [value]);
+
+  return editing ? (
+    <form
+      onSubmit={(ev) => {
+        ev.preventDefault();
+        onSubmit(parseInt(number));
+        setEditing(false);
+      }}
+    >
+      <input
+        type="number"
+        step={1}
+        value={number}
+        onChange={(ev) => setNumber(ev.target.value)}
+        autoFocus
+      />
+    </form>
+  ) : (
+    <span onClick={() => setEditing(true)}>{number}</span>
+  );
+};
+
+export { EditableText, EditableNumber };

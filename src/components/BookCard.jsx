@@ -28,14 +28,14 @@ const BookCard = ({
             : "Some Nerd (in the cool sense, because we know nerds are cool.)"}
         </p>
         {showButtons ? (
-          <p className="card-text">
+          <div className="card-text">
             <DeleteButton warning="Are you sure?" onDelete={onDelete}>
               <i className="fa-solid fa-dumpster-fire"></i>
             </DeleteButton>
             <button className="btn btn-success ms-2" onClick={toggleRead}>
               <i className="fa-solid fa-book-skull"></i>
             </button>
-          </p>
+          </div>
         ) : (
           ""
         )}
