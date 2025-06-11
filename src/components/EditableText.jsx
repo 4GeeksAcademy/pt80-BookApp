@@ -8,17 +8,18 @@ const EditableText = ({ value, onSubmit = () => null }) => {
     setText(value);
   }, [value]);
 
+  const submit = (ev) => {
+    ev.preventDefault();
+    onSubmit(text);
+    setEditing(false);
+  };
+
   return editing ? (
-    <form
-      onSubmit={(ev) => {
-        ev.preventDefault();
-        onSubmit(text);
-        setEditing(false);
-      }}
-    >
+    <form onSubmit={submit}>
       <input
         value={text}
         onChange={(ev) => setText(ev.target.value)}
+        onBlur={submit}
         autoFocus
       />
     </form>

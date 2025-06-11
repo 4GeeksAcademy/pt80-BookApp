@@ -1,13 +1,17 @@
-import { useParams } from "react-router-dom";
-import Container, { Row, Col } from "../components/Grid";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+
 import { EditableText, EditableNumber } from "../components/EditableText.jsx";
-import { useEffect, useState } from "react";
-import Button, { ButtonGroup } from "../components/Button.jsx";
+import Button, { ButtonGroup, DeleteButton } from "../components/Button.jsx";
+import Container, { Row, Col } from "../components/Grid";
+
+import "./BookPage.css";
 
 const BookPage = () => {
   const { book_id } = useParams();
+  const nav = useNavigate();
   const { store, dispatch } = useGlobalReducer();
 
   const [book, setBook] = useState({});
@@ -22,7 +26,7 @@ const BookPage = () => {
     setBook(newBook);
   };
 
-  const postBook = async () => {
+  const editBook = async () => {
     const resp = await fetch(
       `https://library.dotlag.space/library/${book?.id}`,
       {
@@ -38,14 +42,73 @@ const BookPage = () => {
       type: "edit_book",
       book: data,
     });
-  }
+  };
+
+  const deleteBook = async () => {
+    const resp = await fetch(
+      `https://library.dotlag.space/library/${book?.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (resp.ok) {
+      dispatch({
+        type: "delete_book",
+        id: book.id,
+      });
+      nav("/");
+    }
+  };
+
+  const coverStyle = () => ({
+    minWidth: "100%",
+    minHeight: "100%",
+    backgroundImage: `url(${
+      book?.cover ? book.cover : "https://placehold.co/250x400"
+    })`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "contain",
+    backgroundPosition: "center",
+  });
 
   return (
     <div className="my-3">
       <Container>
         <Row>
           <Col>
-            <img src={book?.cover} alt="" />
+            <div className="editable-image" style={coverStyle()}>
+              <div className="button-group">
+                <button
+                  className="btn btn-secondary dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                >
+                  <i className="fa-solid fa-square-pen"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li className="px-1">
+                    <label htmlFor="coverInput" className="form-label">
+                      Cover URL:
+                    </label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      id="coverInput"
+                      value={book?.cover || ""}
+                      onChange={(ev) =>
+                        setBook({
+                          ...book,
+                          cover: ev.target.value,
+                        })
+                      }
+                    ></input>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </Col>
           <Col>
             <h1>
@@ -91,10 +154,7 @@ const BookPage = () => {
             </p>
             <div className="d-flex w-100 justify-content-center my-3">
               <ButtonGroup>
-                <Button
-                  label="Submit"
-                  onClick={postBook}
-                />
+                <Button label="Submit" onClick={editBook} />
                 <Button
                   label="Cancel"
                   variant="danger"
@@ -103,6 +163,9 @@ const BookPage = () => {
                   }}
                 />
               </ButtonGroup>
+              <DeleteButton warning="Are you sure?" onDelete={deleteBook}>
+                <i className="fa-solid fa-dumpster-fire"></i>
+              </DeleteButton>
             </div>
           </Col>
         </Row>

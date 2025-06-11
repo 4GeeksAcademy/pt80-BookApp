@@ -24,5 +24,17 @@ export default function storeReducer(store, action = {}) {
     };
   }
 
+  if (action.type === "delete_book") {
+    const bookIdx = store.books.findIndex(
+      (book) => book.id === action.id
+    );
+    const newBooks = store.books.toSpliced(bookIdx, 1);
+
+    return {
+      ...store,
+      books: newBooks,
+    };
+  }
+
   return store;
 }
